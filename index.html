@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Домашние Задания | БТ 26-22</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        bio: {
+                            emerald: '#10b981',
+                            darkGreen: '#064e3b',
+                            lightGreen: '#d1fae5',
+                            accent: '#34d399',
+                            darkBg: '#0b1329',
+                            lightBg: '#f0fdf4'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Pixel & Retro Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        
+        .pixel-font {
+            font-family: 'Press Start 2P', cursive;
+        }
+        
+        .pixel-subtitle {
+            font-family: 'VT323', monospace;
+        }
+
+        .pixel-card {
+            border: 3px solid #1e293b;
+            box-shadow: 4px 4px 0px #1e293b;
+        }
+
+        .dark .pixel-card {
+            border: 3px solid #000000;
+            box-shadow: 4px 4px 0px #000000;
+        }
+
+        .pixel-btn {
+            border: 2px solid #000000;
+            box-shadow: 3px 3px 0px #000000;
+            transition: all 0.1s ease;
+        }
+
+        .pixel-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000000;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 2px;
+        }
+
+        /* Ambient Pixel Grid Pattern Background */
+        .pixel-bg-grid-dark {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .pixel-bg-grid-light {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        }
+
+        /* Custom Checkbox Styling */
+        .task-checkbox {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid currentColor;
+            background-color: transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.2);
+            transition: all 0.15s ease;
+        }
+
+        .task-checkbox:checked {
+            background-color: #10b981;
+            border-color: #047857;
+        }
+
+        .task-checkbox:checked::after {
+            content: '✓';
+            font-size: 15px;
+            font-weight: bold;
+            color: #022c22;
+        }
+    </style>
+</head>
+<body class="bg-emerald-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200 pixel-bg-grid-light dark:pixel-bg-grid-dark">
+
+    <!-- Header Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-emerald-100/95 dark:bg-slate-900/95 border-b-4 border-emerald-600 dark:border-emerald-500 backdrop-blur-md shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-3.5">
+            <div class="flex items-center justify-between gap-2">
+                
+                <!-- Logo & Title Header -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-emerald-500 text-slate-950 flex items-center justify-center pixel-btn text-xl shrink-0">
+                        <i class="fa-solid fa-flask"></i>
+                    </div>
+                    <div>
+                        <h1 class="pixel-font text-xs sm:text-base text-emerald-800 dark:text-emerald-400 leading-tight">Домашние Задания</h1>
+                        <p class="pixel-subtitle text-lg sm:text-xl text-emerald-700 dark:text-emerald-200 mt-0.5 leading-none">Первый курс • БТ 26-22 • 2026</p>
+                    </div>
+                </div>
+
+                <!-- Header Actions (Sync & Theme Switcher) -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="exportProgress()" class="pixel-btn px-2.5 py-1.5 bg-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-1.5" title="Перенести галочки на другое устройство">
+                        <i class="fa-solid fa-arrows-rotate text-sm"></i>
+                        <span class="pixel-subtitle text-base hidden sm:inline">СИНХРОНИЗАЦИЯ</span>
+                    </button>
+                    <button id="themeToggle" aria-label="Сменить тему" class="pixel-btn px-3 py-1.5 bg-emerald-400 dark:bg-slate-800 text-slate-950 dark:text-emerald-400 font-bold text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-sun text-amber-500 text-base dark:hidden"></i>
+                        <i class="fa-solid fa-moon text-emerald-300 text-base hidden dark:inline"></i>
+                        <span class="pixel-subtitle text-lg hidden sm:inline" id="themeText">ТЕМНАЯ</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weeks Horizontal Tabs -->
+        <div class="bg-emerald-200/80 dark:bg-slate-900 border-t-2 border-emerald-400 dark:border-slate-800 py-2">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="flex space-x-3 overflow-x-auto py-1 no-scrollbar text-base" id="weekTabs">
+                    <button onclick="selectWeek(9)" id="tab-9" class="week-tab pixel-btn px-4 py-1.5 bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 font-bold whitespace-nowrap text-xs">9 неделя</button>
+                    <button onclick="selectWeek(10)" id="tab-10" class="week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs">10 неделя</button>
+                    <button onclick="selectWeek(11)" id="tab-11" class="week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs">11 неделя</button>
+                    <button onclick="selectWeek(12)" id="tab-12" class="week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs">12 неделя</button>
+                    <button onclick="selectWeek(13)" id="tab-13" class="week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs">13 неделя</button>
+                    <button onclick="selectWeek(14)" id="tab-14" class="week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs">14 неделя</button>
+                    <button onclick="selectWeek(15)" id="tab-15" class="week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs">15 неделя</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- Section Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h2 id="currentWeekTitle" class="pixel-font text-xs sm:text-sm text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
+                <span>🧪</span> 9 НЕДЕЛЯ
+            </h2>
+            <span id="taskCount" class="pixel-subtitle text-lg font-bold px-3 py-0.5 bg-emerald-200 dark:bg-slate-800 text-emerald-900 dark:text-emerald-300 border border-emerald-500 dark:border-slate-700">
+                10 предметов
+            </span>
+        </div>
+
+        <!-- Homework Cards Grid (Space between cards on mobile & desktop) -->
+        <div id="homeworkContainer" class="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-start">
+            <!-- Dynamically populated via JavaScript -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t-4 border-emerald-600 dark:border-emerald-800 bg-emerald-100 dark:bg-slate-900 py-6 text-center">
+        <p class="pixel-subtitle text-xl text-emerald-900 dark:text-emerald-300 font-bold">🧬 БИОТЕХНОЛОГИЯ • ГРУППА БТ 26-22 • 2026 🧬</p>
+        <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-semibold">Портал для одногруппников</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Database of Homework Tasks
+        const homeworkData = {
+            9: [
+                {
+                    id: "w9_econ_prac",
+                    subject: "Основы экономики (практика)",
+                    type: "Практика",
+                    icon: "fa-calculator",
+                    items: [
+                        "Практическая работа №9 (в тетради)",
+                        "СРО № 8 (в тетради)"
+                    ],
+                    links: [
+                        { title: "МУ по СРО_Умырзакова А.А..pdf", url: "https://drive.google.com/file/d/1B-AmJH_Op_dk_9IV8TWVtwgwpeX5cJ0x/view?usp=drive_link" },
+                        { title: "МУ_к_ПЗ_,Основы_эконом.pdf", url: "https://drive.google.com/file/d/10RTCQerGN3VGsICqhellAjphtIPeYhVz/view?usp=drive_link" }
+                    ]
+                },
+                {
+                    id: "w9_ict_lec",
+                    subject: "ИКТ (лекция)",
+                    type: "Лекция",
+                    icon: "fa-laptop-code",
+                    items: [
+                        "Конспект лекции № 8"
+                    ],
+                    links: [
+                        { title: "Лекция 8.docx", url: "https://docs.google.com/document/d/1Fj0rA_3VQ6mIx9yboZsIxQFwkZUcN_0M/edit?usp=drive_link&ouid=116901263955885455170&rtpof=true&sd=true" }
+                    ]
+                },
+                {
+                    id: "w9_oii_lec",
+                    subject: "ОИИ (лекция)",
+                    type: "Лекция",
+                    icon: "fa-atom",
+                    items: [
+                        "Дописать конспект лекции № 7",
+                        "Сделать презентацию на 5-7 страниц как просят в конце прикрепленного файла “ОИИ СРОП”"
+                    ],
+                    links: [
+                        { title: "7 лекция.pdf", url: "https://drive.google.com/file/d/1zmMzpgMf3PS12zPGy1KllhNWNo-QnIfT/view?usp=drive_link" },
+                        { title: "ОИИ СРОП .docx", url: "https://docs.google.com/document/d/1K3HZUZHKKie4ZAzoj99oJXgpxwuNFUrn/edit?usp=drive_link&ouid=116901263955885455170&rtpof=true&sd=true" }
+                    ]
+                },
+                {
+                    id: "w9_fin_lit",
+                    subject: "Фин. грамотность",
+                    type: "Лекция",
+                    icon: "fa-coins",
+                    items: [
+                        "Нет ДЗ"
+                    ],
+                    links: []
+                },
+                {
+                    id: "w9_eng_prac",
+                    subject: "Английский язык",
+                    type: "Практика",
+                    icon: "fa-language",
+                    items: [
+                        "Эссе на тему “Sport in my life” (120~160 слов) в тетради. Устно пересказать."
+                    ],
+                    links: []
+                },
+                {
+                    id: "w9_kaz_prac",
+                    subject: "Казахский язык",
+                    type: "Практика",
+                    icon: "fa-book",
+                    items: [
+                        "Эссе на тему “Студенттік ұйым қандай болу керек?” (на 250 слов) в тетради. Устно пересказать."
+                    ],
+                    links: []
+                },
+                {
+                    id: "w9_econ_lec",
+                    subject: "Основы экономики (лекция)",
+                    type: "Лекция",
+                    icon: "fa-chart-line",
+                    items: [
+                        "Конспект лекции 9 недели. Минимум исписать 3 страницы маленькой тетради с 2 сторон."
+                    ],
+                    links: [
+                        { title: "ЛЕКЦИИ 26-27 все ОЭИП .pdf", url: "https://drive.google.com/file/d/1UVREwKUQYoKOHx3AasTS78B60L0cak8K/view?usp=drive_link" }
+                    ]
+                },
+                {
+                    id: "w9_biotech_prac",
+                    subject: "Биотехнология (практика)",
+                    type: "Практика",
+                    icon: "fa-vial",
+                    items: [
+                        "Практическая работа № 9",
+                        "Устный пересказ индивидуально или в группе (с презентацией / постером / без ничего)."
+                    ],
+                    links: [
+                        { title: "25-26_Практика", url: "https://docs.google.com/document/d/1xBSvlZDrpqZueKI_tRa7XdIUUczaeizrl4gpUUNpjKA/edit?usp=drive_link" }
+                    ]
+                },
+                {
+                    id: "w9_biotech_lec",
+                    subject: "Биотехнология (лекция)",
+                    type: "Лекция",
+                    icon: "fa-microscope",
+                    items: [
+                        "Конспект лекции № 8"
+                    ],
+                    links: [
+                        { title: "8 Лекция.pdf", url: "https://drive.google.com/file/d/1AbsiYhweyc_7NcK6qO8QnU07b74El5DK/view?usp=drive_link" }
+                    ]
+                },
+                {
+                    id: "w9_law_prac",
+                    subject: "Основы права и антикоррупционная культура",
+                    type: "Практика",
+                    icon: "fa-scale-balanced",
+                    items: [
+                        "Практическая работа № 9. Отвечаем на все 4 вопроса сравнивая РК и вашу зарубежную страну. Как обычно в распечатанном виде."
+                    ],
+                    links: [
+                        { title: "Вопр. № 9 темы.docx", url: "https://docs.google.com/document/d/1UezpHSVRgs1iXHhQrzTkSrEH7JRzHC6j/edit?usp=drive_link&ouid=116901263955885455170&rtpof=true&sd=true" }
+                    ]
+                }
+            ],
+            10: [],
+            11: [],
+            12: [],
+            13: [],
+            14: [],
+            15: []
+        };
+
+        let currentWeek = 9;
+
+        // Get saved task progress
+        function getSavedProgress() {
+            return JSON.parse(localStorage.getItem('biotech_completed_tasks') || '{}');
+        }
+
+        // Toggle task checkbox
+        function toggleTask(taskId, subIndex) {
+            const progress = getSavedProgress();
+            const key = `${taskId}_${subIndex}`;
+            progress[key] = !progress[key];
+            localStorage.setItem('biotech_completed_tasks', JSON.stringify(progress));
+            
+            updateCardState(taskId);
+        }
+
+        function updateCardState(taskId) {
+            const progress = getSavedProgress();
+            const cardEl = document.getElementById(`card-${taskId}`);
+            if (!cardEl) return;
+
+            const checkboxes = cardEl.querySelectorAll('.task-checkbox');
+            let completedCount = 0;
+
+            checkboxes.forEach((cb, idx) => {
+                const isChecked = !!progress[`${taskId}_${idx}`];
+                cb.checked = isChecked;
+                const textSpan = document.getElementById(`text-${taskId}-${idx}`);
+                if (textSpan) {
+                    if (isChecked) {
+                        textSpan.classList.add('line-through', 'text-slate-400', 'dark:text-slate-500');
+                        textSpan.classList.remove('text-slate-800', 'dark:text-slate-200');
+                    } else {
+                        textSpan.classList.remove('line-through', 'text-slate-400', 'dark:text-slate-500');
+                        textSpan.classList.add('text-slate-800', 'dark:text-slate-200');
+                    }
+                }
+                if (isChecked) completedCount++;
+            });
+
+            if (checkboxes.length > 0 && completedCount === checkboxes.length) {
+                cardEl.classList.add('opacity-40', 'grayscale-[35%]');
+            } else {
+                cardEl.classList.remove('opacity-40', 'grayscale-[35%]');
+            }
+        }
+
+        // Render Function
+        function renderHomework(week) {
+            const container = document.getElementById("homeworkContainer");
+            const taskCount = document.getElementById("taskCount");
+            
+            container.innerHTML = "";
+            const tasks = homeworkData[week] || [];
+            taskCount.textContent = `${tasks.length} предметов`;
+
+            if (tasks.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 px-4 bg-white dark:bg-slate-900 pixel-card border-2 border-slate-400">
+                        <i class="fa-solid fa-seedling text-4xl text-emerald-500 mb-3"></i>
+                        <h3 class="pixel-font text-xs text-slate-800 dark:text-slate-200">Заданий не найдено</h3>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mt-2 font-medium">Для этой недели задания ещё не загружены.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const progress = getSavedProgress();
+
+            tasks.forEach((item) => {
+                const isNoTask = item.items.length === 1 && item.items[0].toLowerCase().includes("нет дз");
+                const isLecture = item.type.toLowerCase().includes("лекция");
+
+                let badgeStyle = isLecture 
+                    ? "bg-purple-100 text-purple-900 border-purple-500 dark:bg-purple-950 dark:text-purple-300" 
+                    : "bg-emerald-100 text-emerald-900 border-emerald-500 dark:bg-emerald-950 dark:text-emerald-300";
+
+                const card = document.createElement("div");
+                card.id = `card-${item.id}`;
+                card.className = `p-5 bg-white dark:bg-slate-900 pixel-card transition-all duration-200 flex flex-col justify-between ${
+                    isNoTask ? 'opacity-60 border-slate-300 dark:border-slate-800' : 'border-slate-900 dark:border-slate-800 hover:border-emerald-500'
+                }`;
+
+                // Items list with left padding (pl-3.5)
+                let itemsHTML = '<div class="space-y-3 my-3 pl-3.5">';
+                item.items.forEach((subTask, idx) => {
+                    if (isNoTask) {
+                        itemsHTML += `
+                            <p class="text-sm sm:text-base italic text-slate-400 dark:text-slate-500 font-semibold">
+                                ${subTask}
+                            </p>
+                        `;
+                    } else {
+                        const isChecked = !!progress[`${item.id}_${idx}`];
+                        itemsHTML += `
+                            <label class="flex items-start space-x-3 cursor-pointer select-none group">
+                                <input type="checkbox" class="task-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleTask('${item.id}', ${idx})">
+                                <span id="text-${item.id}-${idx}" class="text-sm sm:text-base font-semibold leading-relaxed transition-all ${
+                                    isChecked ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-200'
+                                }">
+                                    ${subTask}
+                                </span>
+                            </label>
+                        `;
+                    }
+                });
+                itemsHTML += '</div>';
+
+                // File Links
+                let linksHTML = '';
+                if (item.links && item.links.length > 0) {
+                    linksHTML = `<div class="mt-4 space-y-2 pt-3 border-t-2 border-slate-100 dark:border-slate-800">`;
+                    item.links.forEach(link => {
+                        linksHTML += `
+                            <a href="${link.url}" target="_blank" rel="noopener" class="pixel-btn inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs w-full transition-colors">
+                                <i class="fa-solid fa-file-arrow-down text-sm"></i>
+                                <span class="truncate">${link.title}</span>
+                            </a>
+                        `;
+                    });
+                    linksHTML += `</div>`;
+                }
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="text-xs font-bold px-2.5 py-0.5 border-2 ${badgeStyle} uppercase">
+                                <i class="fa-solid ${item.icon || 'fa-book'} mr-1"></i> ${item.type}
+                            </span>
+                        </div>
+                        <h3 class="font-bold text-base sm:text-lg text-emerald-900 dark:text-emerald-400 leading-snug mb-1">
+                            ${item.subject}
+                        </h3>
+                        ${itemsHTML}
+                    </div>
+                    ${linksHTML}
+                `;
+
+                container.appendChild(card);
+                if (!isNoTask) {
+                    updateCardState(item.id);
+                }
+            });
+        }
+
+        // Tab Selection
+        function selectWeek(weekNum) {
+            currentWeek = weekNum;
+            document.getElementById("currentWeekTitle").innerHTML = `<span>🧪</span> ${weekNum} НЕДЕЛЯ`;
+            
+            document.querySelectorAll(".week-tab").forEach(tab => {
+                tab.className = "week-tab pixel-btn px-4 py-1.5 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-300 font-bold whitespace-nowrap text-xs";
+            });
+            const activeTab = document.getElementById(`tab-${weekNum}`);
+            if (activeTab) {
+                activeTab.className = "week-tab pixel-btn px-4 py-1.5 bg-emerald-600 text-white dark:bg-emerald-500 dark:text-slate-950 font-bold whitespace-nowrap text-xs";
+            }
+
+            renderHomework(currentWeek);
+        }
+
+        // Export/Import Sync Utility
+        function exportProgress() {
+            const data = localStorage.getItem('biotech_completed_tasks') || '{}';
+            const encoded = btoa(data);
+            const choice = prompt("Скопируйте этот код для вставки на другое устройство, или вставьте код с другого устройства сюда:", encoded);
+            
+            if (choice && choice !== encoded) {
+                try {
+                    const decoded = atob(choice);
+                    JSON.parse(decoded); // Validate JSON
+                    localStorage.setItem('biotech_completed_tasks', decoded);
+                    alert("Галочки успешно перенесены!");
+                    renderHomework(currentWeek);
+                } catch(e) {
+                    alert("Ошибка: Неверный код прогресса!");
+                }
+            }
+        }
+
+        // Theme Switcher
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeText = document.getElementById('themeText');
+
+        function updateThemeUI(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                if (themeText) themeText.textContent = "ТЕМНАЯ";
+                localStorage.setItem('bio-theme', 'dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (themeText) themeText.textContent = "СВЕТЛАЯ";
+                localStorage.setItem('bio-theme', 'light');
+            }
+        }
+
+        const savedTheme = localStorage.getItem('bio-theme');
+        if (savedTheme === 'light') {
+            updateThemeUI(false);
+        } else {
+            updateThemeUI(true);
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            const isCurrentlyDark = document.documentElement.classList.contains('dark');
+            updateThemeUI(!isCurrentlyDark);
+        });
+
+        window.onload = function() {
+            renderHomework(9);
+        };
+    </script>
+</body>
+</html>
